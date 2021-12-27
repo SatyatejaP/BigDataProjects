@@ -9,20 +9,25 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 
 import java.net.URI
 
-class CancelledCounter {}
+class CancelledDivertedAirlines {}
 
-object CancelledCounter {
+object CancelledDivertedAirlines {
   def main(args: Array[String]): Unit = {
-    val conf = new Configuration()
-    val j    = new Job(conf, "Cancelled Flights count")
+    val inputPath    = new Path(args(0))
+    val outputPath   = new Path(args(1))
+    val cacheFileURI = new URI(args(2))
+    val conf         = new Configuration()
+    val j            = new Job(conf)
+    j.addCacheFile(cacheFileURI)
+
     j.setJar("UsAirLines.jar")
     j.setJobName("Cancelled Counter")
-    j.setMapperClass(classOf[CancelledCountMapper])
+    j.setMapperClass(classOf[CancelledDivertedAirlinesMapper])
     j.setReducerClass(classOf[CounterReducer])
     j.setMapOutputKeyClass(classOf[Text])
     j.setMapOutputValueClass(classOf[LongWritable])
-    FileInputFormat.addInputPath(j, new Path(args(0)))
-    FileOutputFormat.setOutputPath(j, new Path(args(1)))
+    FileInputFormat.addInputPath(j, inputPath)
+    FileOutputFormat.setOutputPath(j, outputPath)
     import org.apache.hadoop.fs.FileSystem
     val uri = new URI(args(1))
 
@@ -31,5 +36,6 @@ object CancelledCounter {
     val x = fs.delete(new Path(uri), true)
 
     j.waitForCompletion(true)
+
   }
 }
