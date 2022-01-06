@@ -32,6 +32,9 @@
             <version>${scopt.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <sourceDirectory>src/main/scala</sourceDirectory>
+    </build>
 
 
 </project>
